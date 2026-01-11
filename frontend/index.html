@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI_agent Chat</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #0b1220;
+        --panel: #111a2e;
+        --text: #e7eefc;
+        --muted: #9fb2d6;
+        --border: #223055;
+        --accent: #4f8cff;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 24px;
+        display: grid;
+        gap: 16px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      header h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      header .hint {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      #messages {
+        padding: 16px;
+        height: min(60vh, 520px);
+        overflow: auto;
+        display: grid;
+        gap: 12px;
+      }
+      .msg {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .msg .meta {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .msg.user {
+        border-color: rgba(79, 140, 255, 0.45);
+      }
+      .msg.assistant {
+        border-color: rgba(125, 211, 252, 0.35);
+      }
+      form {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        border-top: 1px solid var(--border);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 72px;
+        max-height: 240px;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        outline: none;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      button {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--accent);
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .secondary {
+        background: transparent;
+        color: var(--text);
+      }
+      .status {
+        color: var(--muted);
+        font-size: 12px;
+        flex: 1;
+      }
+      code {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 2px 6px;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>AI_agent Chat</h1>
+        <div class="hint">Backend: <code>/api/chat</code> · DashScope Qwen</div>
+      </header>
+
+      <div class="panel">
+        <div id="messages"></div>
+        <form id="chatForm">
+          <textarea
+            id="input"
+            placeholder="输入你的问题…（Shift+Enter 换行，Enter 发送）"
+          ></textarea>
+          <div class="row">
+            <div class="status" id="status">就绪</div>
+            <button class="secondary" type="button" id="clearBtn">清空</button>
+            <button type="submit" id="sendBtn">发送</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const messagesEl = document.getElementById("messages");
+      const form = document.getElementById("chatForm");
+      const input = document.getElementById("input");
+      const statusEl = document.getElementById("status");
+      const sendBtn = document.getElementById("sendBtn");
+      const clearBtn = document.getElementById("clearBtn");
+
+      /** @type {{role: "user"|"assistant", content: string}[]} */
+      let history = [];
+
+      function render() {
+        messagesEl.innerHTML = "";
+        for (const m of history) {
+          const div = document.createElement("div");
+          div.className = `msg ${m.role}`;
+          div.innerHTML = `<div class="meta">${m.role}</div><div>${escapeHtml(
+            m.content
+          )}</div>`;
+          messagesEl.appendChild(div);
+        }
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function setBusy(busy, text) {
+        sendBtn.disabled = busy;
+        clearBtn.disabled = busy;
+        statusEl.textContent = text;
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      async function sendMessage(message) {
+        setBusy(true, "请求中…");
+
+        history.push({ role: "user", content: message });
+        render();
+
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message,
+            history,
+          }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const detail =
+            typeof data?.detail === "string" ? data.detail : "Request failed";
+          history.push({ role: "assistant", content: `Error: ${detail}` });
+          render();
+          setBusy(false, "出错");
+          return;
+        }
+
+        history.push({ role: "assistant", content: data.reply || "" });
+        render();
+        setBusy(false, `就绪（model: ${data.model || "unknown"}）`);
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = "";
+        try {
+          await sendMessage(text);
+        } catch (err) {
+          history.push({ role: "assistant", content: `Error: ${err}` });
+          render();
+          setBusy(false, "出错");
+        }
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          form.requestSubmit();
+        }
+      });
+
+      clearBtn.addEventListener("click", () => {
+        history = [];
+        render();
+        setBusy(false, "就绪");
+      });
+
+      render();
+    </script>
+  </body>
+</html>
