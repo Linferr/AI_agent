@@ -2,3 +2,5 @@ fastapi>=0.110
 uvicorn[standard]>=0.27
 dashscope>=1.14
 python-dotenv>=1.0
+requests>=2.31
+beautifulsoup4>=4.12

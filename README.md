@@ -46,6 +46,9 @@ uvicorn app:app --reload --port 8000
 
 打开 `http://127.0.0.1:8000/` 即可对话。
 
+RAG 对话（需要先生成语料与 embeddings，见 `rag/README.md` 与 `rag/upgrade-embedding-vector-eval.md`）：
+- 前端勾选 `RAG`（默认开启），或直接调用 `POST /api/rag_chat`
+
 启动检验（可选）：
 
 - 浏览器打开 `http://127.0.0.1:8000/healthz`，应返回 `{"status":"ok"}`
@@ -89,33 +92,43 @@ AI_agent/
 
 每个 Phase 都有一个可运行的最小系统与清晰的“完成标准”。
 
-### Phase 0（0–1 天）：仓库骨架与最小入口
+### Phase 0：仓库骨架与最小入口
 
 - 产出：目录结构 + `app.py` 能运行（哪怕只返回固定字符串）
 - 标准：能一条命令跑起来；README 说清楚目标与如何运行
+- 目前进度（已完成）：
+  - 后端：`app.py`（FastAPI）+ `GET /` + `POST /api/chat` + `GET /healthz`
+  - 前端：`frontend/index.html`（对话 UI，支持切换 `RAG`）
+  - 配置：`.env.example` + `.gitignore` + `requirements.txt` + Quickstart 文档
 
-### Phase 1（1–3 天）：LLM + RAG 最小闭环（先不做 Agent）
+### Phase 1：LLM + RAG 最小闭环（先不做 Agent）
 
 - 产出：文档 ingest + 检索 + 基于证据回答
 - 标准：给定一份小文档集，问答能引用检索到的片段（至少可人工核对）
+- 目前进度（已完成，AWS Troubleshooting 主题）：
+  - 语料蒸馏：`rag/script.py`（seed/crawl 抓取并蒸馏为 JSONL，保留 `source_url`）
+  - 检索：
+    - BM25：`rag/retrieve.py`
+    - 向量检索：`rag/embed.py`（DashScope embedding）+ `rag/vector_retrieve.py`
+  - RAG 对话接口：`POST /api/rag_chat`（top-k 检索 → 证据注入 prompt → 回答输出链接）
+  - 过程文档：`rag/README.md`、`rag/upgrade-embedding-vector-eval.md`、`rag/qa.md`
 
-### Phase 2（4–7 天）：加入 1–2 个工具（Tool Calling）
+### Phase 2：加入 1–2 个工具（Tool Calling）
 
 - 产出：工具 schema + 执行器 + LLM 能选择是否调用工具
 - 标准：工具调用失败可控（超时/重试/降级），并把结果回填后继续回答
+- 目前进度（未开始）：建议优先做 `open_url`（打开命中链接抓正文）和 `search`（检索语料）两类工具
 
-### Phase 3（第 2 周）：最小 Agent Loop（受控 ReAct）
+### Phase 3：最小 Agent Loop（受控 ReAct）
 
 - 产出：多步任务的循环执行（限制步数、终止条件、失败兜底）
 - 标准：在“最多 N 步”约束下完成一个可复现的多步任务
+- 目前进度（未开始）：建议在 Tool Calling 稳定后再做
 
-### Phase 4（可选但强烈建议）：可观测 + 可评估
+### Phase 4：可观测 + 可评估
 
 - 产出：trace + 离线 eval 脚本 + 一组固定用例
 - 标准：能量化比较两版策略/Prompt/RAG 设置的效果差异
-
-## 3. 常见误区
-
-- 不要把 Agent 当成“更强模型”；它首先是工程控制问题。
-- 不要一上来追求“全家桶”；没有 Phase 1 的端到端闭环，上层只会更难调。
-- 不要把 RAG 只当检索；关键是“回答是否被证据约束、是否可追溯”。
+- 目前进度（部分完成）：
+  - 检索离线评估：`eval/aws_troubleshooting_cases.json` + `eval/run_eval.py`（对比 BM25 vs 向量检索 hit@k，输出 `data/eval/report.json`）
+  - 下一步：增加“回答质量”评估（是否引用证据、是否包含链接、是否胡编）

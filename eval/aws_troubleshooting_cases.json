@@ -1,0 +1,103 @@
+[
+  {
+    "id": "sigv4-missing-auth-token",
+    "question": "调用 AWS API 时提示 Missing Authentication Token，SigV4 相关怎么排查？",
+    "expected_url_contains": "reference_sigv-troubleshooting.html"
+  },
+  {
+    "id": "sigv4-signature-mismatch",
+    "question": "请求签名不匹配（The request signature we calculated does not match...）一般要检查哪些点？",
+    "expected_url_contains": "reference_sigv-troubleshooting.html"
+  },
+  {
+    "id": "apigw-http-api-integration",
+    "question": "API Gateway HTTP API 调用后端集成失败时，排障思路是什么？",
+    "expected_url_contains": "http-api-troubleshooting.html"
+  },
+  {
+    "id": "appstream-session-issues",
+    "question": "AppStream 2.0 用户无法启动会话/应用，应该怎么排查？",
+    "expected_url_contains": "appstream2"
+  },
+  {
+    "id": "athena-permissions",
+    "question": "Athena 查询报权限相关错误（AccessDenied / 权限不足），常见原因和排查步骤？",
+    "expected_url_contains": "troubleshooting-athena.html"
+  },
+  {
+    "id": "athena-timeout",
+    "question": "Athena 查询经常超时，可能是什么原因？如何缩小范围？",
+    "expected_url_contains": "troubleshooting-athena.html"
+  },
+  {
+    "id": "athena-output",
+    "question": "Athena 查询输出到 S3 失败或找不到结果，怎么排查？",
+    "expected_url_contains": "troubleshooting-athena.html"
+  },
+  {
+    "id": "aurora-connection",
+    "question": "Aurora 数据库连接不上/连接不稳定，排障应该先看什么？",
+    "expected_url_contains": "AuroraUserGuide/CHAP_Troubleshooting.html"
+  },
+  {
+    "id": "aurora-performance",
+    "question": "Aurora 性能突然变慢，排查路径有哪些？",
+    "expected_url_contains": "AuroraUserGuide/CHAP_Troubleshooting.html"
+  },
+  {
+    "id": "asg-instance-launch",
+    "question": "EC2 Auto Scaling 伸缩组无法启动新实例，常见排查点？",
+    "expected_url_contains": "autoscaling/ec2/userguide/CHAP_Troubleshooting.html"
+  },
+  {
+    "id": "acm-certificate-validate",
+    "question": "ACM 证书一直无法验证/颁发，通常要检查哪些配置？",
+    "expected_url_contains": "acm/latest/userguide/troubleshooting.html"
+  },
+  {
+    "id": "cfn-stack-failed",
+    "question": "CloudFormation Stack 创建失败，怎么快速定位失败资源和原因？",
+    "expected_url_contains": "AWSCloudFormation/latest/UserGuide/troubleshooting.html"
+  },
+  {
+    "id": "cfn-rollback",
+    "question": "CloudFormation 回滚（ROLLBACK）之后如何继续排查并恢复？",
+    "expected_url_contains": "AWSCloudFormation/latest/UserGuide/troubleshooting.html"
+  },
+  {
+    "id": "cloudhsm-intro",
+    "question": "CloudHSM 相关排障入门：我应该先了解哪些核心概念？",
+    "expected_url_contains": "cloudhsm/latest/userguide/introduction.html"
+  },
+  {
+    "id": "cloudsearch-troubleshooting",
+    "question": "CloudSearch 的域创建/索引/查询异常时，排障入口和思路？",
+    "expected_url_contains": "cloudsearch/latest/developerguide/troubleshooting.html"
+  },
+  {
+    "id": "codedeploy-agent",
+    "question": "CodeDeploy 部署失败（Agent/生命周期事件异常）常见原因是什么？",
+    "expected_url_contains": "codedeploy/latest/userguide/troubleshooting.html"
+  },
+  {
+    "id": "sigv4-credential-scope",
+    "question": "SigV4 credential scope 和 x-amz-date 不一致，会导致什么问题，怎么修？",
+    "expected_url_contains": "reference_sigv-troubleshooting.html"
+  },
+  {
+    "id": "athena-syntax",
+    "question": "Athena 提示 SQL 语法错误或解析失败，如何快速定位问题？",
+    "expected_url_contains": "troubleshooting-athena.html"
+  },
+  {
+    "id": "asg-health-check",
+    "question": "Auto Scaling 实例健康检查一直失败导致反复替换，怎么排查？",
+    "expected_url_contains": "autoscaling/ec2/userguide/CHAP_Troubleshooting.html"
+  },
+  {
+    "id": "aurora-storage",
+    "question": "Aurora 存储相关告警或空间异常增长，通常怎么查？",
+    "expected_url_contains": "AuroraUserGuide/CHAP_Troubleshooting.html"
+  }
+]
+

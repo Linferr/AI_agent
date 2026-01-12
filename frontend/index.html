@@ -138,6 +138,10 @@
           ></textarea>
           <div class="row">
             <div class="status" id="status">就绪</div>
+            <label style="display:flex; gap:6px; align-items:center; font-size:12px; color: var(--muted);">
+              <input type="checkbox" id="ragToggle" checked />
+              RAG
+            </label>
             <button class="secondary" type="button" id="clearBtn">清空</button>
             <button type="submit" id="sendBtn">发送</button>
           </div>
@@ -152,9 +156,11 @@
       const statusEl = document.getElementById("status");
       const sendBtn = document.getElementById("sendBtn");
       const clearBtn = document.getElementById("clearBtn");
+      const ragToggle = document.getElementById("ragToggle");
 
       /** @type {{role: "user"|"assistant", content: string}[]} */
       let history = [];
+      let useRag = true;
 
       function render() {
         messagesEl.innerHTML = "";
@@ -172,6 +178,7 @@
       function setBusy(busy, text) {
         sendBtn.disabled = busy;
         clearBtn.disabled = busy;
+        ragToggle.disabled = busy;
         statusEl.textContent = text;
       }
 
@@ -188,7 +195,8 @@
         history.push({ role: "user", content: message });
         render();
 
-        const res = await fetch("/api/chat", {
+        const endpoint = useRag ? "/api/rag_chat" : "/api/chat";
+        const res = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -209,7 +217,8 @@
 
         history.push({ role: "assistant", content: data.reply || "" });
         render();
-        setBusy(false, `就绪（model: ${data.model || "unknown"}）`);
+        const mode = useRag ? "RAG" : "chat";
+        setBusy(false, `就绪（${mode} · model: ${data.model || "unknown"}）`);
       }
 
       form.addEventListener("submit", async (e) => {
@@ -237,6 +246,12 @@
         history = [];
         render();
         setBusy(false, "就绪");
+      });
+
+      ragToggle.addEventListener("change", () => {
+        useRag = !!ragToggle.checked;
+        const mode = useRag ? "RAG" : "chat";
+        setBusy(false, `就绪（${mode}）`);
       });
 
       render();
