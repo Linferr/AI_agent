@@ -111,6 +111,9 @@ AI_agent/
     - BM25：`rag/retrieve.py`
     - 向量检索：`rag/embed.py`（DashScope embedding）+ `rag/vector_retrieve.py`
   - RAG 对话接口：`POST /api/rag_chat`（top-k 检索 → 证据注入 prompt → 回答输出链接）
+  - 评估：
+    - 离线检索评估：`eval/run_eval.py`（对比 BM25 vs 向量检索 hit@k）
+    - output 报告：`data/eval/report.json`，可查看每条用例的 top urls 以及是否命中
   - 过程文档：`rag/README.md`、`rag/upgrade-embedding-vector-eval.md`、`rag/qa.md`
 
 ### Phase 2：加入 1–2 个工具（Tool Calling）
