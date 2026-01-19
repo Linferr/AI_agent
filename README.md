@@ -2,74 +2,9 @@
 
 一个最小可运行的 LLM 应用骨架：后端用 FastAPI，对接阿里云 DashScope 通义千问；前端用一个静态页面做对话 UI。
 
-## Quickstart
-
-### 0) 前置条件
-
-- Python 3.10+（建议 3.11）
-- 已开通阿里云 DashScope，并获取 API Key
-
-### 1) 安装依赖
-
-```bash
-python -m venv .venv
-
-# Windows PowerShell
-.\.venv\Scripts\Activate.ps1
-
-pip install -r requirements.txt
-```
-
-依赖安装检验（可选）：
-
-```bash
-python -c "import fastapi, uvicorn, dashscope, dotenv; print('deps ok')"
-```
-
-### 2) 配置环境变量
-
-- 复制 `.env.example` 为 `.env`
-- 填写 `DASHSCOPE_API_KEY`
-- 可选：设置 `QWEN_MODEL`（默认 `qwen-turbo`）
-
-配置检验（可选）：
-
-```bash
-python -c "import os; print('DASHSCOPE_API_KEY set' if os.getenv('DASHSCOPE_API_KEY') else 'missing DASHSCOPE_API_KEY')"
-```
-
-### 3) 启动
-
-```bash
-uvicorn app:app --reload --port 8000
-```
-
-打开 `http://127.0.0.1:8000/` 即可对话。
-
-RAG 对话（需要先生成语料与 embeddings，见 `rag/README.md` 与 `rag/upgrade-embedding-vector-eval.md`）：
-- 前端勾选 `RAG`（默认开启），或直接调用 `POST /api/rag_chat`
-
-启动检验（可选）：
-
-- 浏览器打开 `http://127.0.0.1:8000/healthz`，应返回 `{"status":"ok"}`
-- PowerShell 测试接口：
-
-```powershell
-Invoke-RestMethod -Method Post http://127.0.0.1:8000/api/chat `
-  -ContentType 'application/json' `
-  -Body '{"message":"你好","history":[]}'
-```
-
-## 常见问题（依赖/配置）
-
-- PowerShell 无法激活虚拟环境：先执行 `Set-ExecutionPolicy -Scope Process Bypass`，再运行 `.\.venv\Scripts\Activate.ps1`
-- `ModuleNotFoundError: dashscope`：确认已在虚拟环境中执行 `pip install -r requirements.txt`
-- `pip` 安装失败/版本过旧：先运行 `python -m pip install -U pip` 再重试
-- 接口返回 `Missing DASHSCOPE_API_KEY`：在 `.env` 或系统环境变量中设置 `DASHSCOPE_API_KEY` 后重启服务
-
 ## 1. 目录与模块（建议的工程拆分）
 
-当前仓库可以先以“文档驱动 + 骨架先行”的方式演进。建议结构：
+当前仓库可以先以“文档驱动 + 骨架先行”的方式演进。结构：
 
 ```
 AI_agent/
@@ -85,8 +20,6 @@ AI_agent/
 ├── eval/         # 测试用例、离线评估脚本
 └── app.py        # 最小可运行入口（端到端）
 ```
-
-说明：这里的目录是“规划目标”，不要求一开始全部实现；按里程碑逐步补齐即可。
 
 ## 2. 路线图（按阶段可验收）
 

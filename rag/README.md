@@ -77,9 +77,9 @@ python -m rag.retrieve --corpus "data/rag/aws_troubleshooting_seed.jsonl" --quer
 - `section_path`：层级路径（当前用于组织/展示）
 - `anchor_missing`：是否未可靠获取锚点
 
-## 下一步建议（从 v1 到“真正 RAG”）
+## 下一步
 
-1) 在后端新增 `/api/rag_chat`：先检索 top-k，再把命中条目的 `summary + source_url` 拼进 prompt，让 LLM 基于证据回答并输出链接。
+1) 增加更多语料：挑选更多文档，补充到 `rag/data.md`，再跑蒸馏脚本。
 2) 升级 embedding + 向量检索：对条目（或更细的 chunk）做 embedding，再用向量库检索（本地/云均可）。
 3) 做 chunking：把小节正文再切成更细粒度片段，提高召回与引用精度。
-4) 建立评估集：固定 20–50 条 AWS 排障问题做离线评估，对比检索策略与 prompt 版本。
+4) 建立评估集：设计一组问答用例，评估“回答质量 + 引用准确率 + 检索命中率”。

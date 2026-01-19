@@ -1,12 +1,12 @@
-# High-Level：这个 repo 在做什么（以及怎么做）
+# High-Level：
 
 这份文档用于：
 - 快速对齐概念、边界与术语
-- 给项目一个可执行的分阶段路线图（每阶段都有“可验收”的产出）
+- 给项目一个可执行的分阶段路线图
 
 ## 1. 概念地图（从底向上叠）
 
-常见的关键词包括：`LLM`、`RAG`、`Tool/Function Calling`、`Agent`、`MCP`、`Skills`、`Observability/Evaluation`。
+`MCP`、`Skills`、`Observability/Evaluation`。
 
 它们更像“能力栈”：
 
@@ -58,7 +58,7 @@ RAG 的目标是减少“瞎编”，让回答可追溯到具体证据片段。
 
 `Skills` 可以理解为“更高层的可复用工具流程/封装”。
 
-### 2.4 Agent：不是魔法，是一个受控的循环
+### 2.4 Agent：一个受控的循环
 
 Agent 不是“更强的模型”，而是“规划 + 执行 + 观察”的循环逻辑（典型 ReAct）：
 
